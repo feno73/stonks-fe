@@ -5,6 +5,8 @@ import CreateUser from "@/components/CreateUser.vue";
 import EditUser from "@/components/EditUser.vue";
 import ActivosManagement from "@/views/ActivosManagement.vue";
 import CreateActivo from "@/components/CreateActivo.vue";
+import Tenencias from "@/views/Tenencias.vue";
+import CreateTenencia from "@/components/CreateTenencia.vue";
 
 const routes = [
     {
@@ -36,6 +38,16 @@ const routes = [
         path: '/activos/create',
         name: 'CreateActivo',
         component: CreateActivo
+    },
+    {
+        path: '/tenencias',
+        name: 'Tenencias',
+        component: Tenencias
+    },
+    {
+        path: '/tenencias/create',
+        name: 'CreateTenencia',
+        component: CreateTenencia
     },
 ]
 
