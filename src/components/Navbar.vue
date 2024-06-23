@@ -6,7 +6,7 @@
       <li><router-link to="/activos" class="text-white">Activos</router-link></li>
       <li><router-link to="/tenencias" class="text-white">Tenencias</router-link></li>
       <li><router-link to="/precios" class="text-white">Precios</router-link></li>
-      <li><router-link to="/tasas-cambio" class="text-white">Tasas de Cambio</router-link></li>
+      <li><router-link to="/cotizacion" class="text-white">Cotizaciones</router-link></li>
     </ul>
   </nav>
 </template>

@@ -7,6 +7,8 @@ import ActivosManagement from "@/views/ActivosManagement.vue";
 import CreateActivo from "@/components/CreateActivo.vue";
 import Tenencias from "@/views/Tenencias.vue";
 import CreateTenencia from "@/components/CreateTenencia.vue";
+import TasaCambio from "@/views/TasaCambio.vue";
+import CreateTasaCambio from "@/components/CreateTasaCambio.vue";
 
 const routes = [
     {
@@ -48,6 +50,16 @@ const routes = [
         path: '/tenencias/create',
         name: 'CreateTenencia',
         component: CreateTenencia
+    },
+    {
+        path: '/cotizacion',
+        name: 'TasaCambio',
+        component: TasaCambio
+    },
+    {
+        path: '/cotizacion/create',
+        name: 'CreateTasaCambio',
+        component: CreateTasaCambio
     },
 ]
 

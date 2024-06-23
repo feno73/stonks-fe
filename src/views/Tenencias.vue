@@ -10,31 +10,55 @@ export default defineComponent({
   name: 'Tenencias',
   data() {
     return {
-      tenencias: []
+      result: [],
+      tenencias: [],
+      datosCargados: false,
+      total_ganancia: 0,
+      total_ganancia_usd: 0,
+      total_precio_compra: 0,
+      total_precio_compra_usd: 0,
+      total_precio_venta: 0,
+      total_precio_venta_usd: 0,
+      total_ganancia_porcentaje: 0,
+      total_ganancia_porcentaje_usd: 0,
     }
   },
   methods: {
     async fetchTenencias(usuario_id: string) {
       try {
         const response = await apiClient.get(`/tenencias/usuario/${usuario_id}`);
-        this.tenencias = response.data;
+        return response.data;
       } catch (error) {
         console.error('Error recuperando tenencias:', error)
       }
     },
+
+    //const gananciaPorcenaje = ((precioActual - precio_compra) / precio_compra) * 100;
     formatDate,
     roundToTwoDecimals
   },
-  mounted() {
-    this.fetchTenencias(usuario_id);
+  async mounted() {
+    this.result = await this.fetchTenencias(usuario_id);
+    this.tenencias = this.result.items;
+    this.total_ganancia = this.result.totals.total_ganancia,
+    this.total_ganancia_usd = this.result.totals.total_ganancia_usd,
+    this.total_precio_compra = this.result.totals.total_precio_compra,
+    this.total_precio_compra_usd = this.result.totals.total_precio_compra_usd,
+    this.total_precio_venta = this.result.totals.total_precio_venta,
+    this.total_precio_venta_usd = this.result.totals.total_precio_venta_usd,
+    this.total_ganancia_porcentaje = this.result.totals.total_ganancia_porcentaje,
+    this.total_ganancia_porcentaje_usd = this.result.totals.total_ganancia_porcentaje_usd,
+    this.datosCargados = true;
   }
 })
 </script>
+
 <template>
   <div class="container mx-auto p-4">
     <h2 class="text-2xl font-bold mb-4">Cartera</h2>
     <router-link to="/tenencias/create" class="bg-blue-500 text-white px-4 py-2 mb-4 rounded inline-block">Cargar Operacion</router-link>
-    <table class="min-w-full border-collapse border border-gray-200">
+    <div v-if="datosCargados">
+      <table class="min-w-full border-collapse border border-gray-200">
       <thead>
       <tr>
         <th class="border border-gray-200 px-4 py-2 bg-gray-100 text-left">Nombre</th>
@@ -65,7 +89,26 @@ export default defineComponent({
         <td class="border border-gray-200 px-4 py-2">{{ roundToTwoDecimals(tenencia.ganancia_porcentaje_usd) }}</td>
       </tr>
       </tbody>
+      <tfoot>
+      <tr class="bg-gray-100">
+        <td class="border border-gray-200 px-4 py-2">Totales</td>
+        <td class="border border-gray-200 px-4 py-2"> </td>
+        <td class="border border-gray-200 px-4 py-2"> </td>
+        <td class="border border-gray-200 px-4 py-2"> </td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_precio_compra }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_precio_venta }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_precio_venta_usd }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_ganancia }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_ganancia_porcentaje }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_ganancia_usd }}</td>
+        <td class="border border-gray-200 px-4 py-2">{{ total_ganancia_porcentaje_usd }}</td>
+      </tr>
+      </tfoot>
     </table>
+    </div>
+    <div v-else>
+      Cargando datos...
+    </div>
   </div>
 </template>
 

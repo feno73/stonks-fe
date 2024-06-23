@@ -22,7 +22,7 @@
       </div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="precio_compra">Precio de compra</label>
-        <input v-model="precio_compra" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="precio_compra" type="number" placeholder="Precio de compra">
+        <input v-model.number="precio_compra" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="precio_compra" placeholder="Precio de compra">
       </div>
       <div class="mb-4">
         <label for="date-picker" class="block text-gray-700">Fecha de compra:</label>
