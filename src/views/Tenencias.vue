@@ -6,6 +6,7 @@ import { roundToTwoDecimals } from "@/utils/round";
 import { formatPrice } from "@/utils/format-price";
 
 const usuario_id = "1235fc46-012f-4c6b-b5aa-7cfeea5c4d84";
+const base_statics = "http://localhost:3000/uploads/";
 
 export default defineComponent({
   name: "Tenencias",
@@ -13,15 +14,10 @@ export default defineComponent({
     return {
       result: [],
       tenencias: [],
+      totals: [],
       datosCargados: false,
-      total_ganancia: 0,
-      total_ganancia_usd: 0,
-      total_precio_compra: 0,
-      total_precio_compra_usd: 0,
-      total_precio_venta: 0,
-      total_precio_venta_usd: 0,
-      total_ganancia_porcentaje: 0,
-      total_ganancia_porcentaje_usd: 0,
+      usuario_id: usuario_id,
+      base_statics: base_statics,
     };
   },
   methods: {
@@ -44,100 +40,157 @@ export default defineComponent({
   async mounted() {
     this.result = await this.fetchTenencias(usuario_id);
     this.tenencias = this.result.items;
-    (this.total_ganancia = this.result.totals.total_ganancia),
-      (this.total_ganancia_usd = this.result.totals.total_ganancia_usd),
-      (this.total_precio_compra = this.result.totals.total_precio_compra),
-      (this.total_precio_compra_usd =
-        this.result.totals.total_precio_compra_usd),
-      (this.total_precio_venta = this.result.totals.total_precio_venta),
-      (this.total_precio_venta_usd = this.result.totals.total_precio_venta_usd),
-      (this.total_ganancia_porcentaje =
-        this.result.totals.total_ganancia_porcentaje),
-      (this.total_ganancia_porcentaje_usd =
-        this.result.totals.total_ganancia_porcentaje_usd),
-      (this.datosCargados = true);
+    this.totals = this.result.totals;
+    (this.datosCargados = true);
   },
 });
 </script>
 
 <template>
-  <div>
-    <h1>Lista de Tenencias</h1>
-    <DataView :value="tenencias" layout="list">
-      <template #list="slotProps">
-        <div v-if="slotProps.items && slotProps.items.length">
+  <Panel header="Totales" :value="totals" >
+    <div class="grid grid-cols-6 gap-4">
+      <Card>
+        <template #title>Total</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            $ {{ formatPrice(totals.total_precio_venta) }}
+          </p>
+        </template>
+      </Card>
+      <Card>
+        <template #title>Total USD</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            $ {{ formatPrice(totals.total_precio_venta_usd) }}
+          </p>
+        </template>
+      </Card>
+      <Card>
+        <template #title>Ganancia</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            $ {{ formatPrice(totals.total_ganancia) }}
+          </p>
+        </template>
+      </Card>
+      <Card>
+        <template #title>Ganancia USD</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            $ {{ formatPrice(totals.total_ganancia_usd) }}
+          </p>
+        </template>
+      </Card>
+      <Card>
+        <template #title>Rendimiento</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            {{ roundToTwoDecimals(totals.total_ganancia_porcentaje) }} %
+          </p>
+        </template>
+      </Card>
+      <Card>
+        <template #title>Rendimiento USD</template>
+        <template #content>
+          <p class="m-0 text-xl">
+            {{ roundToTwoDecimals(totals.total_ganancia_porcentaje_usd) }} %
+          </p>
+        </template>
+      </Card>
+    </div>
+
+  </Panel>
+  <DataTable :value="tenencias" resizableColumns columnResizeMode="fit" stripedRows tableStyle="min-width: 50rem">
+    <template #header>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <span class="text-xl font-bold">Cartera CEDEARs</span>
+        <Button icon="pi pi-refresh" rounded raised @click="fetchTenencias(usuario_id)"/>
+      </div>
+    </template>
+
+    <Column field="nombre" header="Nombre">
+      <template #body="slotProps">
+        <div class="flex flex-row items-center gap-2">
+          <img :src="base_statics + slotProps.data.imagen" :alt="slotProps.data.nombre" class="w-24 rounded" />
           <div class="flex flex-col">
-            <div v-for="(item, index) in slotProps.items" :key="index">
-              <div
-                class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
-                :class="{
-                  'border-t border-surface-200 dark:border-surface-700':
-                    index !== 0,
-                }"
-              >
-                <div
-                  class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
-                >
-                  <div class="w-32 h-32 overflow-hidden rounded-full">
-                    <img
-                      class="object-cover w-full h-full"
-                      :src="`https://i.pinimg.com/736x/77/13/cc/7713ccdd91965eef62c3a5839f3b94ff.jpg`"
-                      :alt="item.nombre"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6"
-                >
-                  <div
-                    class="flex flex-row md:flex-col justify-between items-start gap-2"
-                  >
-                    <div>
-                      <span
-                        class="font-medium text-surface-500 dark:text-surface-400 text-sm"
-                        >{{ item.ticker }}</span
-                      >
-                      <div class="text-lg font-medium mt-2">
-                        {{ item.nombre }}
-                      </div>
-                    </div>
-                    <div class="bg-surface-100 p-1">
-                      <div
-                        class="rounded p-2 flex-auto md:flex-initial whitespace-nowrap"
-                        :class="{
-                          'bg-red-400 pi pi-arrow-down-right':
-                            item.ganancia_usd < 0,
-                          'bg-green-500 pi pi-arrow-up-right':
-                            item.ganancia_usd > 0,
-                          'bg-gray-500 pi pi-equals': item.ganancia_usd === 0,
-                        }"
-                      >
-                        <span class="font-sans ml-1">{{ roundToTwoDecimals(item.ganancia_usd) }} %</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex flex-col md:items-end gap-8">
-                    <span class="text-xl font-semibold"
-                      >$ {{ formatPrice(item.precio_venta) }}</span
-                    >
-                    <div class="flex flex-row-reverse md:flex-row gap-2">
-                      <Button icon="pi pi-heart" outlined></Button>
-                      <Button
-                        icon="pi pi-shopping-cart"
-                        label="Buy Now"
-                        class="flex-auto md:flex-initial whitespace-nowrap"
-                      ></Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <span>{{ slotProps.data.ticker }}</span>
+            <span>{{ slotProps.data.nombre }}</span>
           </div>
         </div>
       </template>
-    </DataView>
-    <div v-if="!datosCargados">Cargando datos...</div>
-  </div>
+    </Column>
+    <Column field="cantidad" header="Cantidad"></Column>
+    <Column field="fecha_compra" header="Fecha Compra">
+      <template #body="slotProps">
+        {{ formatDate(slotProps.data.fecha_compra) }}
+      </template>
+    </Column>
+    <Column field="precio_compra" header="Precio Compra">
+      <template #body="slotProps">
+        {{ formatPrice(slotProps.data.precio_compra * slotProps.data.cantidad) }}
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Precio Actual">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.precio_actual > slotProps.data.precio_compra,
+          'text-red-500': slotProps.data.precio_actual < slotProps.data.precio_compra,
+        }">
+          {{ formatPrice(slotProps.data.precio_venta) }}
+        </div>
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Precio Actual USD">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.precio_actual_usd > slotProps.data.precio_compra_usd,
+          'text-red-500': slotProps.data.precio_actual_usd < slotProps.data.precio_compra_usd,
+        }">
+          {{ formatPrice(slotProps.data.precio_venta_usd) }}
+        </div>
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Ganancia">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.ganancia >= 0,
+          'text-red-500': slotProps.data.ganancia < 0,
+        }">
+          {{ formatPrice(slotProps.data.ganancia) }}
+        </div>
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Ganancia USD">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.ganancia_usd >= 0,
+          'text-red-500': slotProps.data.ganancia_usd < 0,
+        }">
+          {{ formatPrice(slotProps.data.ganancia_usd) }}
+        </div>
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Ganancia %">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.ganancia_porcentaje >= 0,
+          'text-red-500': slotProps.data.ganancia_porcentaje < 0,
+        }">
+          {{ formatPrice(slotProps.data.ganancia_porcentaje) }}
+        </div>
+      </template>
+    </Column>
+    <Column field="precio_actual" header="Ganancia % USD">
+      <template #body="slotProps">
+        <div :class="{
+          'text-green-500': slotProps.data.ganancia_porcentaje_usd >= 0,
+          'text-red-500': slotProps.data.ganancia_porcentaje_usd < 0,
+        }">
+          {{ formatPrice(slotProps.data.ganancia_porcentaje_usd) }}
+        </div>
+      </template>
+    </Column>
+  </DataTable>
 </template>
 
 <style scoped></style>
